@@ -47,9 +47,10 @@ void consumer(std::vector<int> buffer_to_work ,int n){
             if(data>1){
 
                 std::cout<<"Given a buffer of size "<< n <<" Consumer failed to catch up.\n";
-                thread_running = false;
+                
                 return;
             }
+            buffer_to_work[next_out+(k2%n)] = 0;
             next_out = next_out + (k2%n);
         }
         std::cout<< "Consumer next_out:"<< next_out<< std::endl;
@@ -61,12 +62,12 @@ int main(int argc, char** argv){
     std::cout<< n << std::endl;
     std::vector<int> buffer(n,0); 
 
-
-    std::thread producer_thread(producer,ref(buffer),n);
     std::thread consumer_thread(consumer,ref(buffer),n);
+    std::thread producer_thread(producer,ref(buffer),n);
 
-    producer_thread.join();
     consumer_thread.join();
+    thread_running = false;
+    producer_thread.join();
     std::cout<<" Done!";
 
     return EXIT_SUCCESS;
